@@ -17,7 +17,7 @@ public class AccountDAO {
         // getting connection
         Connection connection = ConnectionUtil.getConnection();
 
-        // block of code attempts to insert object
+        // attempts to insert object 
         try {
             // sql query
             String sql = "INSERT INTO account (username, password) VALUES(?,?);";
