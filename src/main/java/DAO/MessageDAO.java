@@ -86,6 +86,11 @@ public class MessageDAO {
         return null;
     }
 
+    /**
+     * function to return ALL messages from database
+     * 
+     * @return list of type Message
+     */
     public List<Message> getAllMessages(){
         List<Message> messages = new ArrayList<>();
         try {
