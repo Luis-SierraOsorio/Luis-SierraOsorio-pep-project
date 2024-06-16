@@ -16,6 +16,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 public class SocialMediaController {
     AccountService accountService;
 
+    //creating an object mapper to transform types
+    ObjectMapper  mapper = new ObjectMapper();
+
     public SocialMediaController(){
         accountService = new AccountService();
     }
@@ -29,6 +32,7 @@ public class SocialMediaController {
         Javalin app = Javalin.create();
         app.get("example-endpoint", this::exampleHandler);
         app.post("/register", this::postAccountHandler);
+        app.post("/login", this::getAccountHandler);
         return app;
     }
 
@@ -40,11 +44,16 @@ public class SocialMediaController {
         context.json("sample text");
     }
 
+    /**
+     * function to add a new user to the database
+     * 
+     * @param context 
+     * @throws JsonProcessingException throws exception
+     */
     private void postAccountHandler(Context context) throws JsonProcessingException{
-        // used to convert data types
-        ObjectMapper mapper = new ObjectMapper();
         // putting the required fields in the object
         Account user = mapper.readValue(context.body(), Account.class);
+        // getting back the user
         Account addedUser = accountService.addAccount(user);
 
         // checking to see if operation was successful
@@ -53,6 +62,30 @@ public class SocialMediaController {
         }else{
             context.json(mapper.writeValueAsString(addedUser));
         }
+    }
+
+    /**
+     * function to handle checking if user is allowed to login
+     * 
+     * @param context used to get user request body
+     * @throws JsonProcessingException
+     */
+    private void getAccountHandler(Context context) throws JsonProcessingException{        
+         
+
+        // getting request body and converting to Account object type with proper fields
+        Account user = mapper.readValue(context.body(), Account.class);
+
+        // checking for the user using service method
+        Account returningAccount = accountService.verifyLogin(user);
+
+        // block of code returns status code unathorized or the object
+        if (returningAccount == null){
+            context.status(401);
+        }else{
+            context.json(mapper.writeValueAsString(returningAccount));
+        }
+
     }
 
 

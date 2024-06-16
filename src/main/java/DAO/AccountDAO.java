@@ -55,19 +55,19 @@ public class AccountDAO {
      * @param account_id account id (primary key)
      * @return account or null if user is not found
      */
-    public Account getAccountById(int account_id) {
+    public Account getAccountByUsername(String username) {
         Connection connection = ConnectionUtil.getConnection();
 
         // try/catch block to get user by id
         try {
 
             // sql logic to get user
-            String sql = "SELECT * FROM account WHERE account_id = ?;";
+            String sql = "SELECT * FROM account WHERE username = ?;";
 
             PreparedStatement preparedStatement = connection.prepareStatement(sql);
 
             // setting the preparedStatement params
-            preparedStatement.setInt(1, account_id);
+            preparedStatement.setString(1, username);
 
             // getting the results from executing the query
             ResultSet results = preparedStatement.executeQuery();
