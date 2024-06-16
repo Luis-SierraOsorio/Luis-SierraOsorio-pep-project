@@ -26,8 +26,8 @@ public class AccountService {
      */
     public Account addAccount(Account user){
         Account newAccount = null;
-
-        if (!user.getUsername().isBlank() && user.getPassword().length() >= 4 && this.accountDAO.getAccountById(user.getAccount_id()) != null){
+        Account existingAccount = this.accountDAO.getAccountById(user.getAccount_id());
+        if (!user.getUsername().isBlank() && user.getPassword().length() >= 4 && existingAccount == null){
             newAccount = this.accountDAO.insertAccount(user);
         }
         
