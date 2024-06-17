@@ -12,26 +12,31 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.List;
 
 /**
- * TODO: You will need to write your own endpoints and handlers for your controller. The endpoints you will need can be
+ * TODO: You will need to write your own endpoints and handlers for your
+ * controller. The endpoints you will need can be
  * found in readme.md as well as the test cases. You should
- * refer to prior mini-project labs and lecture materials for guidance on how a controller may be built.
+ * refer to prior mini-project labs and lecture materials for guidance on how a
+ * controller may be built.
  */
 public class SocialMediaController {
     AccountService accountService;
     MessageService messageService;
 
-    //creating an object mapper to transform types
-    ObjectMapper  mapper = new ObjectMapper();
+    // creating an object mapper to transform types
+    ObjectMapper mapper = new ObjectMapper();
 
-    public SocialMediaController(){
+    public SocialMediaController() {
         accountService = new AccountService();
         messageService = new MessageService();
     }
 
     /**
-     * In order for the test cases to work, you will need to write the endpoints in the startAPI() method, as the test
+     * In order for the test cases to work, you will need to write the endpoints in
+     * the startAPI() method, as the test
      * suite must receive a Javalin object from this method.
-     * @return a Javalin app object which defines the behavior of the Javalin controller.
+     * 
+     * @return a Javalin app object which defines the behavior of the Javalin
+     *         controller.
      */
     public Javalin startAPI() {
         Javalin app = Javalin.create();
@@ -48,7 +53,9 @@ public class SocialMediaController {
 
     /**
      * This is an example handler for an example endpoint.
-     * @param context The Javalin Context object manages information about both the HTTP request and response.
+     * 
+     * @param context The Javalin Context object manages information about both the
+     *                HTTP request and response.
      */
     private void exampleHandler(Context context) {
         context.json("sample text");
@@ -57,19 +64,19 @@ public class SocialMediaController {
     /**
      * function to add a new user to the database
      * 
-     * @param context 
+     * @param context
      * @throws JsonProcessingException throws exception
      */
-    private void postAccountHandler(Context context) throws JsonProcessingException{
+    private void postAccountHandler(Context context) throws JsonProcessingException {
         // putting the required fields in the object
         Account user = mapper.readValue(context.body(), Account.class);
         // getting back the user
         Account addedUser = accountService.addAccount(user);
 
         // checking to see if operation was successful
-        if (addedUser == null){
+        if (addedUser == null) {
             context.status(400);
-        }else{
+        } else {
             context.json(mapper.writeValueAsString(addedUser));
         }
     }
@@ -80,8 +87,7 @@ public class SocialMediaController {
      * @param context used to get user request body
      * @throws JsonProcessingException
      */
-    private void getAccountHandler(Context context) throws JsonProcessingException{        
-         
+    private void getAccountHandler(Context context) throws JsonProcessingException {
 
         // getting request body and converting to Account object type with proper fields
         Account user = mapper.readValue(context.body(), Account.class);
@@ -90,9 +96,9 @@ public class SocialMediaController {
         Account returningAccount = accountService.verifyLogin(user);
 
         // block of code returns status code unathorized or the object
-        if (returningAccount == null){
+        if (returningAccount == null) {
             context.status(401);
-        }else{
+        } else {
             context.json(mapper.writeValueAsString(returningAccount));
         }
 
@@ -104,7 +110,7 @@ public class SocialMediaController {
      * @param context
      * @throws JsonProcessingException
      */
-    private void postMessageHandler(Context context) throws JsonProcessingException{
+    private void postMessageHandler(Context context) throws JsonProcessingException {
         // getting body values
         Message message = mapper.readValue(context.body(), Message.class);
 
@@ -112,9 +118,9 @@ public class SocialMediaController {
         Message returningMessage = messageService.addMessage(message);
 
         // checking to see what to return
-        if (returningMessage == null){
+        if (returningMessage == null) {
             context.status(400);
-        }else{
+        } else {
             context.json(mapper.writeValueAsString(returningMessage));
         }
     }
@@ -125,7 +131,7 @@ public class SocialMediaController {
      * @param context
      * @throws JsonProcessingException
      */
-    private void getAllMessagesHandler(Context context) throws JsonProcessingException{
+    private void getAllMessagesHandler(Context context) throws JsonProcessingException {
         List<Message> returningMessages = messageService.getAllMessages();
 
         context.json(mapper.writeValueAsString(returningMessages));
@@ -137,17 +143,18 @@ public class SocialMediaController {
      * @param context
      * @throws JsonProcessingException
      */
-    private void getMessageByIdHandler(Context context) throws JsonProcessingException{
+    private void getMessageByIdHandler(Context context) throws JsonProcessingException {
 
         // getting the query string from the path and converting to Interger
-        // not sure if I should be checking to make sure this step doesnt throw an exception
+        // not sure if I should be checking to make sure this step doesnt throw an
+        // exception
         int messageId = Integer.parseInt(context.pathParam("message_id"));
-        
+
         // calling service funciton to get message by id
         Message message = messageService.getMessageById(messageId);
 
         // if message is not empty/null then return the message in the body
-        if (message != null){
+        if (message != null) {
             context.json(mapper.writeValueAsString(message));
         }
     }
@@ -159,7 +166,7 @@ public class SocialMediaController {
      * @throws JsonProcessingException
      */
     private void deleteMessageByIdHandler(Context context) throws JsonProcessingException {
-        
+
         // getting the path parameter
         int messageId = Integer.parseInt(context.pathParam("message_id"));
 
@@ -167,19 +174,25 @@ public class SocialMediaController {
         Message message = messageService.deleteMessageById(messageId);
 
         // checking if message existed and returning it in the body
-        if (message != null){
+        if (message != null) {
             context.json(mapper.writeValueAsString(message));
         }
     }
 
+    /**
+     * handler function to update a message given the id.
+     * 
+     * @param context
+     * @throws JsonProcessingException
+     */
     private void updateMessageByIdHandler(Context context)throws JsonProcessingException{
         
         // getting path parameters
         int messageId = Integer.parseInt(context.pathParam("message_id"));
 
         // getting body parameters
-        String newMessageText = context.formParam("message_text");
-
+        Message messageData = mapper.readValue(context.body(), Message.class);
+        String newMessageText = messageData.getMessage_text();
         Message message = messageService.updateMessageById(messageId, newMessageText);
 
         if (message == null){
@@ -188,6 +201,6 @@ public class SocialMediaController {
             context.json(mapper.writeValueAsString(message));
         }
 
-    }    
+    }
 
 }
