@@ -105,4 +105,14 @@ public class MessageService {
 
     }
 
+    /**
+     * function that calls the getMessagesFromUser from the DAO
+     * 
+     * @param accountId
+     * @return
+     */
+    public List<Message> getMessagesFromUser(int accountId){
+        return messageDAO.getAllMessagesFromUser(accountId);
+    }
+
 }

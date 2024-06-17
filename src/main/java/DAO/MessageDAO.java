@@ -13,8 +13,10 @@ public class MessageDAO {
      * function to check if user exist
      * 
      * was thinking about implementing this in the AccountDAO but a few things:
-     * I didnt want to have to construct a an AccountDAO object in the MessageService and
+     * I didnt want to have to construct a an AccountDAO object in the
+     * MessageService and
      * I really only need it here for this project
+     * 
      * @param userId
      * @return true/false
      */
@@ -167,12 +169,13 @@ public class MessageDAO {
     /**
      * function to delete a message based on the id provided
      * no need to return anything, either the delete happens or it doesn't
-     * based on the documentation  of sql delete return a boolean but I think this is fine for now
+     * based on the documentation of sql delete return a boolean but I think this is
+     * fine for now
      * 
      * @param messageId
      * @return
      */
-    public void deleteMessageById(int messageId){
+    public void deleteMessageById(int messageId) {
         try {
             // connection
             Connection connection = ConnectionUtil.getConnection();
@@ -194,13 +197,14 @@ public class MessageDAO {
     }
 
     /**
-     * function to update a message, funciton assumes message exists - I handle verification on the service layer.
+     * function to update a message, funciton assumes message exists - I handle
+     * verification on the service layer.
      * 
      * @param messageId
      * @param messageText
      */
-    public void updateMessageById(int messageId, String messageText){
-        
+    public void updateMessageById(int messageId, String messageText) {
+
         try {
             // connection
             Connection connection = ConnectionUtil.getConnection();
@@ -220,6 +224,48 @@ public class MessageDAO {
             // TODO: handle exception
             System.out.println(e.getMessage());
         }
+    }
+
+
+    /**
+     * function to get all messages from a specific user based on id
+     * 
+     * @param accountId 
+     * @return list of Objects type Message
+     */
+    public List<Message> getAllMessagesFromUser(int accountId) {
+        List<Message> messages = new ArrayList<>();
+
+        try {
+            // connection
+            Connection connection = ConnectionUtil.getConnection();
+
+            // sql string
+            String sql = "SELECT * FROM message INNER JOIN account ON message.posted_by = account.account_id WHERE account.account_id = ?;";
+            PreparedStatement preparedStatement = connection.prepareStatement(sql);
+
+            // injecting params
+            preparedStatement.setInt(1, accountId);
+
+            // executing query
+            ResultSet results = preparedStatement.executeQuery();
+
+            // going throughing the results and adding them to the returning list
+            while (results.next()) {
+                Message message = new Message(results.getInt("message_id"),
+                        results.getInt("posted_by"),
+                        results.getString("message_text"),
+                        results.getLong("time_posted_epoch"));
+
+                messages.add(message);
+            }
+
+        } catch (Exception e) {
+            // TODO: handle exception
+            System.out.println(e.getMessage());
+        }
+
+        return messages;
     }
 
 }

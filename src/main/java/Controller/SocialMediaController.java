@@ -48,6 +48,7 @@ public class SocialMediaController {
         app.get("/messages/{message_id}", this::getMessageByIdHandler);
         app.delete("/messages/{message_id}", this::deleteMessageByIdHandler);
         app.patch("/messages/{message_id}", this::updateMessageByIdHandler);
+        app.get("/accounts/{account_id}/messages", this::getMessagesFromUserHandler);
         return app;
     }
 
@@ -201,6 +202,20 @@ public class SocialMediaController {
             context.json(mapper.writeValueAsString(message));
         }
 
+    }
+
+    /**
+     * handler function to handle getting messages from specific user based on id
+     * 
+     * @param context
+     * @throws JsonProcessingException
+     */
+    private void getMessagesFromUserHandler(Context context) throws JsonProcessingException{
+        // getting params from path
+        int accountId = Integer.parseInt(context.pathParam("account_id"));
+
+        List<Message> returningMessages = messageService.getMessagesFromUser(accountId);
+        context.json(mapper.writeValueAsString(returningMessages));
     }
 
 }
