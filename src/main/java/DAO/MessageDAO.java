@@ -12,10 +12,10 @@ public class MessageDAO {
     /**
      * function to check if user exist
      * 
-     * @param user_id
+     * @param userId
      * @return true/false
      */
-    public Boolean userExists(int user_id) {
+    public Boolean userExists(int userId) {
         try {
             // connection
             Connection connection = ConnectionUtil.getConnection();
@@ -26,7 +26,7 @@ public class MessageDAO {
             PreparedStatement preparedStatement = connection.prepareStatement(sql);
 
             // injecting values in prepared statement
-            preparedStatement.setInt(1, user_id);
+            preparedStatement.setInt(1, userId);
 
             // executing statement and getting result
             ResultSet result = preparedStatement.executeQuery();
@@ -126,10 +126,10 @@ public class MessageDAO {
     /**
      * function to get message by id
      * 
-     * @param message_id
+     * @param messageId
      * @return new Object of type message or null if not found
      */
-    public Message getMessageById(int message_id) {
+    public Message getMessageById(int messageId) {
         try {
             // connection
             Connection connection = ConnectionUtil.getConnection();
@@ -139,7 +139,7 @@ public class MessageDAO {
             PreparedStatement preparedStatement = connection.prepareStatement(sql);
 
             // inject needed values into preparedStatement
-            preparedStatement.setInt(1, message_id);
+            preparedStatement.setInt(1, messageId);
 
             // execute query
             ResultSet result = preparedStatement.executeQuery();
@@ -159,6 +159,35 @@ public class MessageDAO {
 
         // message not found
         return null;
+    }
+
+    /**
+     * function to delete a message based on the id provided
+     * no need to return anything, either the delete happens or it doesn't
+     * based on the documentation  of sql delete return a boolean but I think this is fine for now
+     * 
+     * @param messageId
+     * @return
+     */
+    public void deleteMessageById(int messageId){
+        try {
+            // connection
+            Connection connection = ConnectionUtil.getConnection();
+
+            // sql string
+            String sql = "DELETE FROM message WHERE message_id = ?;";
+            PreparedStatement preparedStatement = connection.prepareStatement(sql);
+
+            // injection values into preparedStatement
+            preparedStatement.setInt(1, messageId);
+
+            // executing query
+            preparedStatement.executeUpdate();
+
+        } catch (Exception e) {
+            // TODO: handle exception
+            System.out.println(e.getMessage());
+        }
     }
 
 }

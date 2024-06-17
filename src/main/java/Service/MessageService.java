@@ -53,11 +53,29 @@ public class MessageService {
     /**
      * function that calls DAO to retrieve message based on message_id
      * 
-     * @param message_id
+     * @param messageId
      * @return Message object or null
      */
-    public Message getMessageById(int message_id){
-        return messageDAO.getMessageById(message_id);
+    public Message getMessageById(int messageId){
+        return messageDAO.getMessageById(messageId);
+    }
+
+    /**
+     * function to delete a message by id passed
+     * first checks if message exist using the getMessageById call
+     * if exists then deletes message and returns object otherwise returns null
+     * 
+     * @param messageId
+     * @return null or object of type Message
+     */
+    public Message deleteMessageById(int messageId){
+        Message message = messageDAO.getMessageById(messageId);
+
+        if (message != null){
+            messageDAO.deleteMessageById(messageId);
+        }
+
+        return message;
     }
     
 
