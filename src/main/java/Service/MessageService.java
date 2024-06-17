@@ -42,9 +42,22 @@ public class MessageService {
 
     /**
      * function to retrieve all messages
+     * 
+     * @return list of Message objects
      */
     public List<Message> getAllMessages(){
         return messageDAO.getAllMessages();
+    }
+
+
+    /**
+     * function that calls DAO to retrieve message based on message_id
+     * 
+     * @param message_id
+     * @return Message object or null
+     */
+    public Message getMessageById(int message_id){
+        return messageDAO.getMessageById(message_id);
     }
     
 

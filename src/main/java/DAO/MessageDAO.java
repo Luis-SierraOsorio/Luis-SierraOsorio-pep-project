@@ -15,14 +15,14 @@ public class MessageDAO {
      * @param user_id
      * @return true/false
      */
-    public Boolean userExists(int user_id){
-        try{
+    public Boolean userExists(int user_id) {
+        try {
             // connection
             Connection connection = ConnectionUtil.getConnection();
 
             // sql string
             String sql = "SELECT * FROM user WHERE user_id = ?;";
-            
+
             PreparedStatement preparedStatement = connection.prepareStatement(sql);
 
             // injecting values in prepared statement
@@ -32,10 +32,10 @@ public class MessageDAO {
             ResultSet result = preparedStatement.executeQuery();
 
             // if we get result then user exist, return true
-            if (result.next()){
+            if (result.next()) {
                 return true;
             }
-        }catch(Exception e){
+        } catch (Exception e) {
             System.out.println(e.getMessage());
         }
 
@@ -46,7 +46,7 @@ public class MessageDAO {
     /**
      * function to insert message into database
      * 
-     * @param message 
+     * @param message
      * @return object of type Message if successful or null if fails
      */
     public Message insertMessage(Message message) {
@@ -70,12 +70,13 @@ public class MessageDAO {
             preparedStatement.executeUpdate();
 
             // getting the auto generated id key
-            ResultSet results = preparedStatement.getGeneratedKeys();
+            ResultSet result = preparedStatement.getGeneratedKeys();
 
             // checking that we have results and returning new object of type Message
-            if (results.next()){
-                int message_id = (int)results.getLong(1);
-                return new Message(message_id, message.getPosted_by(), message.getMessage_text(), message.getTime_posted_epoch());
+            if (result.next()) {
+                int message_id = (int) result.getLong(1);
+                return new Message(message_id, message.getPosted_by(), message.getMessage_text(),
+                        message.getTime_posted_epoch());
             }
 
         } catch (Exception e) {
@@ -91,12 +92,12 @@ public class MessageDAO {
      * 
      * @return list of type Message
      */
-    public List<Message> getAllMessages(){
+    public List<Message> getAllMessages() {
         List<Message> messages = new ArrayList<>();
         try {
             // connection
             Connection connection = ConnectionUtil.getConnection();
-            
+
             // sql string
             String sql = "SELECT * FROM message;";
             PreparedStatement preparedStatement = connection.prepareStatement(sql);
@@ -104,12 +105,13 @@ public class MessageDAO {
             // executing preparedStatement
             ResultSet results = preparedStatement.executeQuery();
 
-            // iterating through all results, make new Message object, add new objetc to list
-            while(results.next()){
-                Message newMessage = new Message(results.getInt("message_id"), 
-                results.getInt("posted_by"),
-                results.getString("message_text"),
-                results.getLong("time_posted_epoch"));
+            // iterating through all results, make new Message object, add new objetc to
+            // list
+            while (results.next()) {
+                Message newMessage = new Message(results.getInt("message_id"),
+                        results.getInt("posted_by"),
+                        results.getString("message_text"),
+                        results.getLong("time_posted_epoch"));
 
                 messages.add(newMessage);
             }
@@ -117,8 +119,46 @@ public class MessageDAO {
             // TODO: handle exception
             System.out.println(e.getMessage());
         }
-        
+
         return messages;
+    }
+
+    /**
+     * function to get message by id
+     * 
+     * @param message_id
+     * @return new Object of type message or null if not found
+     */
+    public Message getMessageById(int message_id) {
+        try {
+            // connection
+            Connection connection = ConnectionUtil.getConnection();
+
+            // sql string
+            String sql = "SELECT * FROM message WHERE message_id = ?;";
+            PreparedStatement preparedStatement = connection.prepareStatement(sql);
+
+            // inject needed values into preparedStatement
+            preparedStatement.setInt(1, message_id);
+
+            // execute query
+            ResultSet result = preparedStatement.executeQuery();
+
+            // check if message exist and return new Object
+            if (result.next()) {
+                return new Message(result.getInt("message_id"),
+                        result.getInt("posted_by"),
+                        result.getString("message_text"),
+                        result.getLong("time_posted_epoch"));
+            }
+
+        } catch (Exception e) {
+            // TODO: handle exception
+            System.out.println(e.getMessage());
+        }
+
+        // message not found
+        return null;
     }
 
 }

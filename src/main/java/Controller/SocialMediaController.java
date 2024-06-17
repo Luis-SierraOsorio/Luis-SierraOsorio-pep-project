@@ -40,6 +40,7 @@ public class SocialMediaController {
         app.post("/login", this::getAccountHandler);
         app.post("/messages", this::postMessageHandler);
         app.get("/messages", this::getAllMessagesHandler);
+        app.get("/messages/{message_id}", this::getMessageByIdHandler);
         return app;
     }
 
@@ -124,8 +125,29 @@ public class SocialMediaController {
      */
     private void getAllMessagesHandler(Context context) throws JsonProcessingException{
         List<Message> returningMessages = messageService.getAllMessages();
-        
+
         context.json(mapper.writeValueAsString(returningMessages));
+    }
+
+    /**
+     * function to handle retrieving specific message based on the id
+     * 
+     * @param context
+     * @throws JsonProcessingException
+     */
+    private void getMessageByIdHandler(Context context) throws JsonProcessingException{
+
+        // getting the query string from the path and converting to Interger
+        // not sure if I should be checking to make sure this step doesnt throw an exception
+        int messageId = Integer.parseInt(context.pathParam("message_id"));
+        
+        // calling service funciton to get message by id
+        Message message = messageService.getMessageById(messageId);
+
+        // if message is not empty/null then return the message in the body
+        if (message != null){
+            context.json(mapper.writeValueAsString(message));
+        }
     }
 
 }
