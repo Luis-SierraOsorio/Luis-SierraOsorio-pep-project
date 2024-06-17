@@ -78,5 +78,16 @@ public class MessageService {
         return message;
     }
     
+    public Message updateMessageById(int messageId, String newMessageText){
+
+        Message returningMessage = messageDAO.getMessageById(messageId);
+        
+        if (returningMessage != null && !newMessageText.isBlank() && newMessageText.length() <= 255){
+            messageDAO.updateMessageById(messageId, newMessageText);
+            returningMessage.setMessage_text(newMessageText);
+        }
+
+        return returningMessage;
+    }
 
 }

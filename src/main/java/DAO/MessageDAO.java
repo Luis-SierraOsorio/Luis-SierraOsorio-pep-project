@@ -12,6 +12,9 @@ public class MessageDAO {
     /**
      * function to check if user exist
      * 
+     * was thinking about implementing this in the AccountDAO but a few things:
+     * I didnt want to have to construct a an AccountDAO object in the MessageService and
+     * I really only need it here for this project
      * @param userId
      * @return true/false
      */
@@ -180,6 +183,35 @@ public class MessageDAO {
 
             // injection values into preparedStatement
             preparedStatement.setInt(1, messageId);
+
+            // executing query
+            preparedStatement.executeUpdate();
+
+        } catch (Exception e) {
+            // TODO: handle exception
+            System.out.println(e.getMessage());
+        }
+    }
+
+    /**
+     * function to update a message, funciton assumes message exists - I handle verification on the service layer.
+     * 
+     * @param messageId
+     * @param messageText
+     */
+    public void updateMessageById(int messageId, String messageText){
+        
+        try {
+            // connection
+            Connection connection = ConnectionUtil.getConnection();
+
+            // sql string
+            String sql = "UPDATE message SET message_text = ? WHERE message_id = ?;";
+            PreparedStatement preparedStatement = connection.prepareStatement(sql);
+
+            // injecting parameters
+            preparedStatement.setString(1, messageText);
+            preparedStatement.setInt(2, messageId);
 
             // executing query
             preparedStatement.executeUpdate();
